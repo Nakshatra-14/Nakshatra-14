@@ -2,6 +2,6 @@
 
 <p align="center">
     <br>
-    <img src="https://github-readme-stats.vercel.app/api?username=Nakshatra4762&show_icons=true&theme=blue&show_owner=true&count_private=true">
+    <img src="https://github-readme-stats.vercel.app/api?username=Nakshatra-14&show_icons=true&theme=blue&show_owner=true&count_private=true">
               
     
