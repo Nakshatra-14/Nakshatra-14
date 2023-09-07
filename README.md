@@ -1,4 +1,4 @@
-<h1 align="center">Elloo 👋 <img src="https://gpvc.arturio.dev/Nakshatra4762"></h1>
+<h1 align="center">Elloo 👋 <img src="https://komarev.com/ghpvc/?username=Nakshatra-14"></h1>
 
 <p align="center">
     <br>
