@@ -3,5 +3,6 @@
 <p align="center">
     <br>
     <img src="https://github-readme-stats.vercel.app/api?username=Nakshatra-14&show_icons=true&theme=blue&show_owner=true&count_private=true">
+    [![roadmap.sh](https://roadmap.sh/card/wide/66f46f1dc45e253cb06cb9ed?variant=dark)](https://roadmap.sh)
               
     
