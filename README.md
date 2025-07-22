@@ -1,4 +1,5 @@
-<h1 align="center">Helloo 👋 <img src="https://komarev.com/ghpvc/?username=Nakshatra-14"></h1>
+<h1 align="center">Helloo <img src="https://media.giphy.com/media/TEnXkcsHrP4YedChhA/giphy.gif" width="35">
+    <br><img src="https://komarev.com/ghpvc/?username=Nakshatra-14"></h1>
 
 <p align="center">
     <br>
