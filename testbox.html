@@ -6,9 +6,6 @@
     <title>AI Box Damage Detector</title>
     <meta property="og:title" content="AI Box Inspector 📦">
     <meta property="og:description" content="Upload a photo of your box to instantly check if it is Normal or Damaged using Artificial Intelligence.">
-    <meta property="og:image" content="https://nakshatra-14.github.io/Nakshatra-14/preview.jpg">
-    <meta property="og:url" content="https://nakshatra-14.github.io/Nakshatra-14/testbox.html">
-    <meta property="og:type" content="website">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <style>
@@ -29,7 +26,7 @@
             overflow-x: hidden;
         }
 
-        /* Animated Background */
+        /* --- Animated Background Elements --- */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -38,6 +35,7 @@
             height: 100%;
             z-index: 0;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .bg-animation span {
@@ -48,153 +46,84 @@
             background: rgba(255, 255, 255, 0.1);
             animation: float 25s infinite;
             bottom: -150px;
+            backdrop-filter: blur(5px);
+            border-radius: 50%; /* Circles look softer */
         }
 
-        .bg-animation span:nth-child(1) {
-            left: 25%;
-            width: 80px;
-            height: 80px;
-            animation-delay: 0s;
-        }
-
-        .bg-animation span:nth-child(2) {
-            left: 10%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 2s;
-            animation-duration: 12s;
-        }
-
-        .bg-animation span:nth-child(3) {
-            left: 70%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 4s;
-        }
-
-        .bg-animation span:nth-child(4) {
-            left: 40%;
-            width: 60px;
-            height: 60px;
-            animation-delay: 0s;
-            animation-duration: 18s;
-        }
-
-        .bg-animation span:nth-child(5) {
-            left: 65%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 0s;
-        }
-
-        .bg-animation span:nth-child(6) {
-            left: 75%;
-            width: 110px;
-            height: 110px;
-            animation-delay: 3s;
-        }
-
-        .bg-animation span:nth-child(7) {
-            left: 35%;
-            width: 150px;
-            height: 150px;
-            animation-delay: 7s;
-        }
-
-        .bg-animation span:nth-child(8) {
-            left: 50%;
-            width: 25px;
-            height: 25px;
-            animation-delay: 15s;
-            animation-duration: 45s;
-        }
+        /* Varied animation timings and positions (kept from original) */
+        .bg-animation span:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .bg-animation span:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .bg-animation span:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .bg-animation span:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .bg-animation span:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .bg-animation span:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .bg-animation span:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
 
         @keyframes float {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-                border-radius: 0;
-            }
-            100% {
-                transform: translateY(-1000px) rotate(720deg);
-                opacity: 0;
-                border-radius: 50%;
-            }
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
         }
 
+        /* --- Glassmorphism Container --- */
         .container {
             position: relative;
             z-index: 1;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            /* Glass Effect */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 30px;
             padding: 50px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            text-align: center;
             animation: slideUp 0.6s ease-out;
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
             font-size: 2.5em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
             margin-bottom: 10px;
-            animation: fadeIn 0.8s ease-out 0.2s both;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
             font-size: 1.1em;
-            animation: fadeIn 0.8s ease-out 0.4s both;
+            letter-spacing: 1px;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
+        /* --- Glassy Upload Area --- */
         .upload-area {
-            border: 3px dashed #667eea;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
             border-radius: 20px;
             padding: 40px;
-            margin: 30px 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
             cursor: pointer;
             transition: all 0.3s ease;
-            animation: fadeIn 0.8s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
         }
 
         .upload-area:hover {
-            border-color: #764ba2;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+            transform: translateY(-2px);
         }
 
         .upload-icon {
             font-size: 4em;
             margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
             animation: bounce 2s infinite;
         }
 
@@ -203,109 +132,126 @@
             50% { transform: translateY(-10px); }
         }
 
-        input[type="file"] {
-            display: none;
+        input[type="file"] { display: none; }
+
+        /* --- Image Preview --- */
+        .preview-container {
+            position: relative;
+            margin: 20px auto;
+            display: none; /* Hidden by default */
         }
 
         #image-preview {
             max-width: 100%;
-            max-height: 400px;
-            margin: 20px auto;
-            display: none;
+            max-height: 350px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            animation: zoomIn 0.5s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255,255,255,0.2);
         }
 
-        @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        /* --- Buttons --- */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            display: none; /* Hidden initially */
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 50px;
-            font-size: 1.2em;
+            padding: 15px 30px;
+            font-size: 1.1em;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            margin-top: 20px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-            animation: fadeIn 0.8s ease-out 0.8s both;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        .btn-primary {
+            background: #fff;
+            color: #667eea;
         }
 
-        .btn:active {
-            transform: translateY(-1px);
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255,255,255,0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
         }
 
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
 
+        /* --- Loader & Status --- */
         .loader {
             display: none;
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .status {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 15px;
+            background: rgba(0,0,0,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
         }
 
+        /* --- Results --- */
         #result-container {
             margin-top: 30px;
-            animation: fadeIn 0.5s ease-out;
+            min-height: 20px;
         }
 
         .result-box {
             font-size: 1.5em;
             font-weight: bold;
-            padding: 30px;
+            padding: 25px;
             border-radius: 20px;
             display: inline-block;
-            min-width: 300px;
+            min-width: 280px;
             animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         @keyframes popIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.5) rotate(-10deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
+        /* Glassy variants for results */
         .normal {
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            background: linear-gradient(135deg, rgba(132, 250, 176, 0.9) 0%, rgba(143, 211, 244, 0.9) 100%);
             color: #155724;
         }
 
         .damaged {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            background: linear-gradient(135deg, rgba(250, 112, 154, 0.9) 0%, rgba(254, 225, 64, 0.9) 100%);
             color: #721c24;
         }
 
@@ -314,75 +260,66 @@
             font-size: 0.7em;
             margin-top: 10px;
             opacity: 0.8;
-        }
-
-        .status {
-            font-size: 0.9em;
-            color: #667eea;
-            margin-top: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            font-weight: normal;
         }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .result-box {
-                min-width: auto;
-                font-size: 1.2em;
-            }
+            .container { padding: 30px 20px; }
+            h1 { font-size: 2em; }
+            .btn-group { flex-direction: column; }
         }
     </style>
 </head>
 <body>
     <div class="bg-animation">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span>
     </div>
 
     <div class="container">
         <h1>📦 AI Box Inspector</h1>
-        <p class="subtitle">Powered by Machine Learning</p>
+        <p class="subtitle">Glassmorphism Powered Detection</p>
         
-        <div class="upload-area" onclick="document.getElementById('image-upload').click()">
+        <div class="status" id="status">⏳ Loading Neural Network...</div>
+
+        <div class="upload-area" id="upload-area" onclick="document.getElementById('image-upload').click()">
             <div class="upload-icon">📸</div>
-            <p style="font-size: 1.2em; color: #667eea; font-weight: 600;">Click to Upload Image</p>
-            <p style="color: #999; margin-top: 10px;">or drag and drop</p>
+            <p style="font-size: 1.2em; color: #fff; font-weight: 600;">Tap to Upload Box Image</p>
+            <p style="color: rgba(255,255,255,0.7); margin-top: 10px;">Supported: JPG, PNG</p>
         </div>
         
         <input type="file" id="image-upload" accept="image/*">
         
-        <img id="image-preview" src="#" alt="Image Preview">
-        
-        <button class="btn" onclick="predict()" id="predict-btn">
-            🔍 Inspect Box
-        </button>
+        <div class="preview-container" id="preview-container">
+            <img id="image-preview" src="#" alt="Image Preview">
+        </div>
 
         <div class="loader" id="loader"></div>
-        <div class="status" id="status">Loading AI Model...</div>
         <div id="result-container"></div>
+
+        <div class="btn-group" id="action-buttons">
+            <button class="btn btn-secondary" onclick="resetApp()">🔄 Reupload</button>
+            <button class="btn btn-primary" onclick="predict()" id="predict-btn">🔍 Inspect Box</button>
+        </div>
     </div>
 
     <script type="text/javascript">
+        // --- Configuration ---
         const URL = "https://teachablemachine.withgoogle.com/models/nxq6v0lNm/";
         let model, maxPredictions;
 
+        // --- DOM Elements ---
+        const uploadArea = document.getElementById('upload-area');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const actionButtons = document.getElementById('action-buttons');
+        const resultContainer = document.getElementById('result-container');
+        const fileInput = document.getElementById('image-upload');
+        const statusDiv = document.getElementById('status');
+        const loader = document.getElementById('loader');
+        const predictBtn = document.getElementById('predict-btn');
+
+        // --- Initialization ---
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
@@ -390,53 +327,67 @@
             try {
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
-                console.log("Model Loaded Successfully");
-                document.getElementById("status").textContent = "✅ AI Model Ready";
-                document.getElementById("status").style.color = "#28a745";
+                statusDiv.textContent = "✅ AI System Ready";
+                statusDiv.style.background = "rgba(40, 167, 69, 0.2)";
+                statusDiv.style.border = "1px solid rgba(40, 167, 69, 0.4)";
             } catch (error) {
-                console.error("Error loading model:", error);
-                document.getElementById("status").textContent = "❌ Error loading model";
-                document.getElementById("status").style.color = "#dc3545";
+                statusDiv.textContent = "❌ Failed to load Model";
+                statusDiv.style.background = "rgba(220, 53, 69, 0.2)";
             }
         }
 
-        const fileInput = document.getElementById('image-upload');
+        // --- Handle File Upload ---
         fileInput.addEventListener('change', function(event) {
-            const image = document.getElementById('image-preview');
             if (event.target.files && event.target.files[0]) {
-                image.src = window.URL.createObjectURL(event.target.files[0]);
-                image.style.display = "block";
-                document.getElementById("result-container").innerHTML = "";
-                document.querySelector('.upload-area').style.display = 'none';
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    
+                    // UI Transition
+                    uploadArea.style.display = 'none';
+                    previewContainer.style.display = 'block';
+                    actionButtons.style.display = 'flex';
+                    resultContainer.innerHTML = ""; // Clear previous results
+                };
+                reader.readAsDataURL(event.target.files[0]);
             }
         });
 
+        // --- Reset / Reupload Functionality ---
+        function resetApp() {
+            // Reset UI
+            uploadArea.style.display = 'block';
+            previewContainer.style.display = 'none';
+            actionButtons.style.display = 'none';
+            resultContainer.innerHTML = "";
+            
+            // Clear Data
+            imagePreview.src = "#";
+            fileInput.value = ""; // Important: allows selecting the same file again
+        }
+
+        // --- Prediction Logic ---
         async function predict() {
             if (!model) {
-                alert("Model is still loading... Please wait a moment.");
+                alert("Please wait for the AI model to load.");
                 return;
             }
 
-            const image = document.getElementById('image-preview');
-            if (!image.src || image.src === window.location.href + "#") {
-                alert("Please upload an image first!");
-                return;
-            }
-
-            const loader = document.getElementById('loader');
-            const btn = document.getElementById('predict-btn');
-            const resultContainer = document.getElementById("result-container");
-
+            // UI State: Loading
             loader.style.display = 'block';
-            btn.disabled = true;
+            predictBtn.disabled = true;
+            predictBtn.textContent = "Analyzing...";
             resultContainer.innerHTML = "";
 
             try {
-                const prediction = await model.predict(image);
+                // Slight delay for UI smoothness
+                await new Promise(r => setTimeout(r, 500));
 
+                const prediction = await model.predict(imagePreview);
                 let highestScore = 0;
                 let bestClass = "";
 
+                // Find best match
                 for (let i = 0; i < maxPredictions; i++) {
                     if (prediction[i].probability > highestScore) {
                         highestScore = prediction[i].probability;
@@ -444,8 +395,10 @@
                     }
                 }
 
+                // UI State: Finished
                 loader.style.display = 'none';
-                btn.disabled = false;
+                predictBtn.disabled = false;
+                predictBtn.textContent = "🔍 Inspect Box";
 
                 const confidence = (highestScore * 100).toFixed(2);
                 
@@ -455,26 +408,26 @@
                         <div class="result-box damaged">
                             <div>❌ DAMAGED BOX</div>
                             <span class="confidence">Confidence: ${confidence}%</span>
-                        </div>
-                    `;
+                        </div>`;
                 } else {
                     resultHTML = `
                         <div class="result-box normal">
                             <div>✅ NORMAL BOX</div>
                             <span class="confidence">Confidence: ${confidence}%</span>
-                        </div>
-                    `;
+                        </div>`;
                 }
                 
                 resultContainer.innerHTML = resultHTML;
+
             } catch (error) {
-                console.error("Prediction error:", error);
+                console.error(error);
                 loader.style.display = 'none';
-                btn.disabled = false;
-                alert("Error during prediction. Please try again.");
+                predictBtn.disabled = false;
+                alert("An error occurred during analysis.");
             }
         }
 
+        // Start App
         init();
     </script>
 </body>
