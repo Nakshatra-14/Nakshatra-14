@@ -3,220 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Box Damage Detector</title>
-
+    <title>AI Box Damage Detector</title>
     <meta property="og:title" content="AI Box Inspector 📦">
     <meta property="og:description" content="Upload a photo of your box to instantly check if it is Normal or Damaged using Artificial Intelligence.">
     <meta property="og:image" content="https://nakshatra-14.github.io/Nakshatra-14/preview.jpg">
     <meta property="og:url" content="https://nakshatra-14.github.io/Nakshatra-14/testbox.html">
     <meta property="og:type" content="website">
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-
     <style>
-        /* Modern Reset & Variables */
-        :root {
-            --primary: #4a90e2;
-            --success: #28a745;
-            --danger: #dc3545;
-            --bg: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-main: #333;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
+            overflow-x: hidden;
         }
 
-        /* Main Card Container */
-        .app-container {
-            background: var(--card-bg);
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s ease;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
         }
 
-        h1 { font-size: 24px; margin-bottom: 10px; color: var(--text-main); }
-        p.subtitle { color: #666; font-size: 14px; margin-bottom: 25px; }
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 25s infinite;
+            bottom: -150px;
+        }
 
-        /* Stylish Upload Area */
-        .upload-area {
-            border: 2px dashed #cbd5e0;
-            border-radius: 12px;
-            padding: 30px 20px;
-            cursor: pointer;
-            transition: border-color 0.3s, background 0.3s;
+        .bg-animation span:nth-child(1) {
+            left: 25%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation span:nth-child(2) {
+            left: 10%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+
+        .bg-animation span:nth-child(3) {
+            left: 70%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 4s;
+        }
+
+        .bg-animation span:nth-child(4) {
+            left: 40%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+
+        .bg-animation span:nth-child(5) {
+            left: 65%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation span:nth-child(6) {
+            left: 75%;
+            width: 110px;
+            height: 110px;
+            animation-delay: 3s;
+        }
+
+        .bg-animation span:nth-child(7) {
+            left: 35%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 7s;
+        }
+
+        .bg-animation span:nth-child(8) {
+            left: 50%;
+            width: 25px;
+            height: 25px;
+            animation-delay: 15s;
+            animation-duration: 45s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 0;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
+        }
+
+        .container {
             position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out;
         }
-        
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+            animation: fadeIn 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
         .upload-area:hover {
-            border-color: var(--primary);
-            background: #f0f7ff;
+            border-color: #764ba2;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
-        .upload-icon { font-size: 40px; color: var(--primary); margin-bottom: 10px; }
-        .upload-text { font-size: 14px; color: #666; font-weight: 500; }
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
 
-        /* Hide the ugly default file input */
-        #image-upload { display: none; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
 
-        /* Image Preview */
+        input[type="file"] {
+            display: none;
+        }
+
         #image-preview {
             max-width: 100%;
-            border-radius: 12px;
-            margin-top: 20px;
+            max-height: 400px;
+            margin: 20px auto;
             display: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: zoomIn 0.5s ease-out;
         }
 
-        /* Action Button */
-        .btn-inspect {
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            padding: 15px 50px;
+            font-size: 1.2em;
             border: none;
-            padding: 12px 25px;
             border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
             margin-top: 20px;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            animation: fadeIn 0.8s ease-out 0.8s both;
         }
 
-        .btn-inspect:active { transform: scale(0.98); }
-        .btn-inspect:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+        }
 
-        /* Results */
-        #result-container { margin-top: 25px; min-height: 60px; }
+        .btn:active {
+            transform: translateY(-1px);
+        }
 
-        .result-card {
-            padding: 15px;
-            border-radius: 12px;
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loader {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #result-container {
+            margin-top: 30px;
             animation: fadeIn 0.5s ease-out;
         }
 
-        .result-card.normal {
-            background-color: #d4edda;
+        .result-box {
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 30px;
+            border-radius: 20px;
+            display: inline-block;
+            min-width: 300px;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .normal {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
             color: #155724;
-            border-left: 5px solid var(--success);
         }
 
-        .result-card.damaged {
-            background-color: #f8d7da;
+        .damaged {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
             color: #721c24;
-            border-left: 5px solid var(--danger);
         }
 
-        .result-title { font-weight: bold; font-size: 18px; display: block; margin-bottom: 5px; }
-        .result-conf { font-size: 13px; opacity: 0.8; }
-
-        /* Loading Spinner */
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: var(--primary);
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-            display: none;
+        .confidence {
+            display: block;
+            font-size: 0.7em;
+            margin-top: 10px;
+            opacity: 0.8;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .status {
+            font-size: 0.9em;
+            color: #667eea;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .result-box {
+                min-width: auto;
+                font-size: 1.2em;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="bg-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 
-    <div class="app-container">
+    <div class="container">
         <h1>📦 AI Box Inspector</h1>
-        <p class="subtitle">Upload a photo to detect damage instantly.</p>
-
-        <label for="image-upload" class="upload-area">
-            <div class="upload-icon">📷</div>
-            <div class="upload-text">Tap to Upload Image</div>
-        </label>
-        <input type="file" id="image-upload" accept="image/*" onchange="loadFile(event)">
+        <p class="subtitle">Powered by Machine Learning</p>
         
-        <img id="image-preview" src="#" alt="Preview">
-
-        <button type="button" class="btn-inspect" onclick="predict()" id="predict-btn">🔍 Analyze Box</button>
-
-        <div id="result-container">
-            <div class="spinner" id="loading-spinner"></div>
+        <div class="upload-area" onclick="document.getElementById('image-upload').click()">
+            <div class="upload-icon">📸</div>
+            <p style="font-size: 1.2em; color: #667eea; font-weight: 600;">Click to Upload Image</p>
+            <p style="color: #999; margin-top: 10px;">or drag and drop</p>
         </div>
+        
+        <input type="file" id="image-upload" accept="image/*">
+        
+        <img id="image-preview" src="#" alt="Image Preview">
+        
+        <button class="btn" onclick="predict()" id="predict-btn">
+            🔍 Inspect Box
+        </button>
+
+        <div class="loader" id="loader"></div>
+        <div class="status" id="status">Loading AI Model...</div>
+        <div id="result-container"></div>
     </div>
 
     <script type="text/javascript">
-        // --- PASTE YOUR URL HERE ---
         const URL = "https://teachablemachine.withgoogle.com/models/nxq6v0lNm/";
-        // ---------------------------
-
         let model, maxPredictions;
-        const resultContainer = document.getElementById("result-container");
-        const spinner = document.getElementById("loading-spinner");
 
-        // Load model
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
+
             try {
                 model = await tmImage.load(modelURL, metadataURL);
                 maxPredictions = model.getTotalClasses();
                 console.log("Model Loaded Successfully");
-            } catch (e) {
-                console.error("Error loading model:", e);
-                resultContainer.innerHTML = "<span style='color:red; font-size:12px;'>Error loading AI model. Check connection.</span>";
+                document.getElementById("status").textContent = "✅ AI Model Ready";
+                document.getElementById("status").style.color = "#28a745";
+            } catch (error) {
+                console.error("Error loading model:", error);
+                document.getElementById("status").textContent = "❌ Error loading model";
+                document.getElementById("status").style.color = "#dc3545";
             }
         }
 
-        // Handle Image Upload
-        var loadFile = function(event) {
-            var image = document.getElementById('image-preview');
-            image.src = window.URL.createObjectURL(event.target.files[0]);
-            image.style.display = "block";
-            // Clear previous results but hide spinner
-            resultContainer.innerHTML = '<div class="spinner" id="loading-spinner"></div>'; 
-        };
-
-        // Run Prediction
-        async function predict() {
+        const fileInput = document.getElementById('image-upload');
+        fileInput.addEventListener('change', function(event) {
             const image = document.getElementById('image-preview');
-            
+            if (event.target.files && event.target.files[0]) {
+                image.src = window.URL.createObjectURL(event.target.files[0]);
+                image.style.display = "block";
+                document.getElementById("result-container").innerHTML = "";
+                document.querySelector('.upload-area').style.display = 'none';
+            }
+        });
+
+        async function predict() {
             if (!model) {
-                alert("Please wait, AI is still waking up...");
+                alert("Model is still loading... Please wait a moment.");
                 return;
             }
-            if (image.style.display === "none" || image.src === "#") {
+
+            const image = document.getElementById('image-preview');
+            if (!image.src || image.src === window.location.href + "#") {
                 alert("Please upload an image first!");
                 return;
             }
 
-            // Show Spinner
-            document.getElementById("loading-spinner").style.display = "block";
-            
-            // Artificial delay to make it feel like "processing" (optional, purely for UX)
-            setTimeout(async () => {
+            const loader = document.getElementById('loader');
+            const btn = document.getElementById('predict-btn');
+            const resultContainer = document.getElementById("result-container");
+
+            loader.style.display = 'block';
+            btn.disabled = true;
+            resultContainer.innerHTML = "";
+
+            try {
                 const prediction = await model.predict(image);
-                
+
                 let highestScore = 0;
                 let bestClass = "";
 
@@ -227,30 +444,38 @@
                     }
                 }
 
-                const confidence = (highestScore * 100).toFixed(1);
+                loader.style.display = 'none';
+                btn.disabled = false;
+
+                const confidence = (highestScore * 100).toFixed(2);
                 
                 let resultHTML = "";
-                // Icons and colors based on result
                 if (bestClass.toLowerCase().includes("damaged")) {
                     resultHTML = `
-                        <div class="result-card damaged">
-                            <span class="result-title">❌ DAMAGED</span>
-                            <span class="result-conf">Confidence: ${confidence}%</span>
-                        </div>`;
+                        <div class="result-box damaged">
+                            <div>❌ DAMAGED BOX</div>
+                            <span class="confidence">Confidence: ${confidence}%</span>
+                        </div>
+                    `;
                 } else {
                     resultHTML = `
-                        <div class="result-card normal">
-                            <span class="result-title">✅ NORMAL</span>
-                            <span class="result-conf">Confidence: ${confidence}%</span>
-                        </div>`;
+                        <div class="result-box normal">
+                            <div>✅ NORMAL BOX</div>
+                            <span class="confidence">Confidence: ${confidence}%</span>
+                        </div>
+                    `;
                 }
-
+                
                 resultContainer.innerHTML = resultHTML;
-            }, 600); // 600ms delay for smooth UI feel
+            } catch (error) {
+                console.error("Prediction error:", error);
+                loader.style.display = 'none';
+                btn.disabled = false;
+                alert("Error during prediction. Please try again.");
+            }
         }
 
         init();
     </script>
-
 </body>
 </html>
