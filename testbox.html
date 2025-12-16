@@ -4,24 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Box Damage Detector</title>
+    
     <meta property="og:title" content="AI Box Inspector 📦">
     <meta property="og:description" content="Upload a photo of your box to instantly check if it is Normal or Damaged using Artificial Intelligence.">
     <meta property="og:image" content="https://nakshatra-14.github.io/Nakshatra-14/preview.jpg">
     <meta property="og:url" content="https://nakshatra-14.github.io/Nakshatra-14/testbox.html">
     <meta property="og:type" content="website">
+
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        body { font-family: sans-serif; text-align: center; padding: 50px; position: relative; }
         #image-preview { max-width: 300px; margin: 20px auto; display: block; border: 2px solid #ccc; }
         .result-box { margin-top: 20px; font-size: 24px; font-weight: bold; padding: 20px; border-radius: 10px; display: inline-block;}
         .normal { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .damaged { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+
+        /* --- NEW STYLES FOR USER COUNTER --- */
+        .online-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
+    <div class="online-counter">
+        <span class="dot"></span>
+        <span id="user-count">Loading...</span> users online
+    </div>
+    
+    <script id="_wau1t8">var _wau = _wau || []; _wau.push(["dynamic", "boxinspector123", "1t8", "c4302bffffff", "small"]);</script>
+    <script async src="//waust.at/d.js"></script>
     <h1>📦 Box Inspector</h1>
     
     <input type="file" id="image-upload" accept="image/*" onchange="loadFile(event)">
@@ -34,33 +73,44 @@
     <div id="result-container"></div>
 
     <script type="text/javascript">
-        // --- PASTE YOUR URL HERE ---
+        // --- YOUR CONFIGURATION ---
         const URL = "https://teachablemachine.withgoogle.com/models/nxq6v0lNm/";
-        // ---------------------------
+        
+        // --- CUSTOM LOGIC TO HIDE THE UGLY WIDGET AND SHOW TEXT ONLY ---
+        // The widget usually shows a logo. We are hiding the logo with CSS
+        // and just grabbing the number to show in our nice black box.
+        setInterval(() => {
+            // Find the widget element created by the script
+            const widget = document.getElementById("wau_1t8");
+            if (widget) {
+                // Extract the number text from it
+                const count = widget.innerText; 
+                // Update our custom display
+                if(count) document.getElementById("user-count").innerText = count;
+                
+                // Hide the original ugly widget
+                widget.style.display = "none"; 
+            }
+        }, 1000);
+        // -------------------------------------------------------------
 
         let model, maxPredictions;
 
-        // Load the model automatically when page opens
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
-
-            // Load the model using the TM library (Handles all the resizing/cropping for you!)
             model = await tmImage.load(modelURL, metadataURL);
             maxPredictions = model.getTotalClasses();
             console.log("Model Loaded");
         }
 
-        // Handle Image Upload
         var loadFile = function(event) {
             var image = document.getElementById('image-preview');
             image.src = window.URL.createObjectURL(event.target.files[0]);
             image.style.display = "block";
-            // Clear previous results
             document.getElementById("result-container").innerHTML = ""; 
         };
 
-        // Run Prediction
         async function predict() {
             if (!model) {
                 alert("Model is still loading... wait a second.");
@@ -68,11 +118,8 @@
             }
 
             var image = document.getElementById('image-preview');
-            
-            // The magic line: tmImage handles the preprocessing perfectly
             const prediction = await model.predict(image);
 
-            // Find the highest score
             let highestScore = 0;
             let bestClass = "";
 
@@ -83,7 +130,6 @@
                 }
             }
 
-            // Display Result
             const resultContainer = document.getElementById("result-container");
             const confidence = (highestScore * 100).toFixed(2);
             
@@ -97,10 +143,8 @@
             resultContainer.innerHTML = resultHTML;
         }
 
-        // Start loading model immediately
         init();
     </script>
 
 </body>
-
 </html>
