@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Damage Detector</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        #image-preview { max-width: 300px; margin: 20px auto; display: block; border: 2px solid #ccc; }
+        .result-box { margin-top: 20px; font-size: 24px; font-weight: bold; padding: 20px; border-radius: 10px; display: inline-block;}
+        .normal { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .damaged { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>📦 Box Inspector</h1>
+    
+    <input type="file" id="image-upload" accept="image/*" onchange="loadFile(event)">
+    <br>
+    <img id="image-preview" src="#" alt="Image Preview" style="display:none;">
+    
+    <br>
+    <button type="button" onclick="predict()">🔍 Inspect Box</button>
+
+    <div id="result-container"></div>
+
+    <script type="text/javascript">
+        // --- PASTE YOUR URL HERE ---
+        const URL = "https://teachablemachine.withgoogle.com/models/nxq6v0lNm/";
+        // ---------------------------
+
+        let model, maxPredictions;
+
+        // Load the model automatically when page opens
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // Load the model using the TM library (Handles all the resizing/cropping for you!)
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+            console.log("Model Loaded");
+        }
+
+        // Handle Image Upload
+        var loadFile = function(event) {
+            var image = document.getElementById('image-preview');
+            image.src = window.URL.createObjectURL(event.target.files[0]);
+            image.style.display = "block";
+            // Clear previous results
+            document.getElementById("result-container").innerHTML = ""; 
+        };
+
+        // Run Prediction
+        async function predict() {
+            if (!model) {
+                alert("Model is still loading... wait a second.");
+                return;
+            }
+
+            var image = document.getElementById('image-preview');
+            
+            // The magic line: tmImage handles the preprocessing perfectly
+            const prediction = await model.predict(image);
+
+            // Find the highest score
+            let highestScore = 0;
+            let bestClass = "";
+
+            for (let i = 0; i < maxPredictions; i++) {
+                if (prediction[i].probability > highestScore) {
+                    highestScore = prediction[i].probability;
+                    bestClass = prediction[i].className;
+                }
+            }
+
+            // Display Result
+            const resultContainer = document.getElementById("result-container");
+            const confidence = (highestScore * 100).toFixed(2);
+            
+            let resultHTML = "";
+            if (bestClass.toLowerCase().includes("damaged")) {
+                resultHTML = `<div class="result-box damaged">❌ ALERT: Damaged (${confidence}%)</div>`;
+            } else {
+                resultHTML = `<div class="result-box normal">✅ Normal Box (${confidence}%)</div>`;
+            }
+            
+            resultContainer.innerHTML = resultHTML;
+        }
+
+        // Start loading model immediately
+        init();
+    </script>
+
+</body>
+</html>
