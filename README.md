@@ -1,7 +1,7 @@
 <h1 align="center">Helloo <img src="https://media.giphy.com/media/TEnXkcsHrP4YedChhA/giphy.gif" width="35">
     <br><img src="https://komarev.com/ghpvc/?username=Nakshatra-14"></h1>
 
-# 💫 About Me:
+# 💫 About Me: 
 🔭 I’m currently BTech Student<br>I’m currently learning AIML<br>
 
 
